@@ -1,5 +1,6 @@
 package org.lukedowell.sunshine;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +25,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -43,7 +42,7 @@ public class ForecastFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ArrayList<String> forecast = new ArrayList<>();
+        final ArrayList<String> forecast = new ArrayList<>();
         forecast.add("Today - Cold as hell - -69/-69");
         forecast.add("Tomorrow - Chiller than a polarbear's toenails - 0/-10");
         forecast.add("Weds - Cloudy - 72/63");
@@ -65,8 +64,13 @@ public class ForecastFragment extends Fragment {
         forecastListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 String forecast = mForecastAdapter.getItem(position);
-                Toast.makeText(getContext(), forecast, Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT, forecast);
+
+                startActivity(intent);
             }
         });
 
@@ -89,11 +93,10 @@ public class ForecastFragment extends Fragment {
                     List<String> forecastList = Arrays.asList(forecast);
                     mForecastAdapter.clear();
                     mForecastAdapter.addAll(forecastList);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
+                break;
         }
         return true;
     }
