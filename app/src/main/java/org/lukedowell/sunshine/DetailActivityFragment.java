@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -26,10 +27,11 @@ public class DetailActivityFragment extends Fragment {
         if(intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
             String forecast = intent.getStringExtra(Intent.EXTRA_TEXT);
             Log.v(getClass().getSimpleName(), "Creating detail view with forecast : " + forecast);
-            ((TextView) rootView.findViewById(R.id.detail_text))
-                    .setText(forecast);
+            TextView textView = (TextView) rootView.findViewById(R.id.definitelyUniqueId);
+            textView.setText(forecast);
+
         } else {
-            Log.v(getClass().getSimpleName(), "OOOOOOO" );
+            Toast.makeText(getContext(), "No forecast data received!", Toast.LENGTH_LONG).show();
         }
         return inflater.inflate(R.layout.fragment_detail, container, false);
     }

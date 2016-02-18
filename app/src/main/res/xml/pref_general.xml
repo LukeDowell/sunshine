@@ -1,7 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <CheckBoxPreference android:title="Application Updates"
-        android:defaultValue="false"
-        android:summary="This option if selected will allow the application to check for latest versions."
-        android:key="applicationUpdates" />
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <PreferenceCategory
+        android:title="Weather API">
+        <EditTextPreference
+            android:title="Location"
+            android:key="location"
+            android:defaultValue="55068"
+            android:inputType="text"
+            android:singleLine="true" />
+
+        <ListPreference
+            android:title="Units"
+            android:key="units"
+            android:defaultValue="@string/pref_units_default"
+            android:entries="@array/units"
+            android:entryValues="@array/unitValues"/>
+    </PreferenceCategory>
+
+
 </PreferenceScreen>

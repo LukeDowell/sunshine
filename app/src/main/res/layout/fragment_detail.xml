@@ -11,7 +11,11 @@
 
 
     <TextView
-        android:id="@+id/detail_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/definitelyUniqueId"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="@dimen/abc_text_size_display_1_material" />
 </RelativeLayout>

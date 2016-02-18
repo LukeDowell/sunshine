@@ -1,9 +1,11 @@
 package org.lukedowell.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,6 +37,12 @@ public class ForecastFragment extends Fragment {
     private ArrayAdapter<String> mForecastAdapter;
 
     @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
@@ -43,12 +52,6 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final ArrayList<String> forecast = new ArrayList<>();
-        forecast.add("Today - Cold as hell - -69/-69");
-        forecast.add("Tomorrow - Chiller than a polarbear's toenails - 0/-10");
-        forecast.add("Weds - Cloudy - 72/63");
-        forecast.add("Thurs - Rainy - 64/51");
-        forecast.add("Fri - Foggy - 70/46");
-        forecast.add("Sat - Sunny - 76/68");
 
         mForecastAdapter =
                 new ArrayAdapter<>(
@@ -77,6 +80,26 @@ public class ForecastFragment extends Fragment {
         return view;
     }
 
+    private void updateWeather() {
+        try {
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            String zipcodeString = sharedPreferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+            try {
+                int zipcode = Integer.parseInt(zipcodeString);
+                String[] forecast = new FetchWeatherTask().execute(zipcode).get();
+                List<String> forecastList = Arrays.asList(forecast);
+                mForecastAdapter.clear();
+                mForecastAdapter.addAll(forecastList);
+            } catch(Exception e) {
+                e.printStackTrace();
+                Toast.makeText(getContext(), "Make sure to enter a valid zipcode!", Toast.LENGTH_LONG).show();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.forecastfragment, menu);
@@ -88,14 +111,10 @@ public class ForecastFragment extends Fragment {
 
         switch(id) {
             case R.id.action_refresh:
-                try {
-                    String[] forecast = new FetchWeatherTask().execute(55068).get();
-                    List<String> forecastList = Arrays.asList(forecast);
-                    mForecastAdapter.clear();
-                    mForecastAdapter.addAll(forecastList);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                updateWeather();
+                break;
+            case R.id.action_settings:
+                Log.v("ForecastFragment", "SETTINGS");
                 break;
         }
         return true;
@@ -115,8 +134,11 @@ public class ForecastFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String forecastJsonStr = null;
 
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             String format = "json";
-            String units = "metric";
+            String units = pref.getString(
+                    getString(R.string.pref_units_key),
+                    getString(R.string.pref_units_default));
 
             int numDays = 7;
 
